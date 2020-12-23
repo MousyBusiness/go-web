@@ -5,12 +5,14 @@ import (
 	"errors"
 	"github.com/mousybusiness/go-web/web/webtest"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"testing"
 	"time"
 )
 
 func TestDo(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
 	Client = webtest.MockClient{}
 	req := &http.Request{Header: make(map[string][]string)}
 	webtest.DoFunc = func(req *http.Request) (*http.Response, error) {

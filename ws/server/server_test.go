@@ -26,6 +26,8 @@ func (m MockServer) ReadMessage(c *CleanableConnection) ([]byte, error) {
 }
 
 func TestNewConnection(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
+
 	conn := wstest.MockCleanConn{}
 	uid := "stub"
 	c := NewConnection(uid, conn)
@@ -43,6 +45,8 @@ func TestNewConnection(t *testing.T) {
 }
 
 func TestWrite(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
+
 	Server = MockServer{}
 
 	conn := wstest.MockCleanConn{}
@@ -79,6 +83,8 @@ func TestWrite(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
+
 	conn := wstest.MockCleanConn{
 		Conn: wstest.MockRWCloser{},
 	}

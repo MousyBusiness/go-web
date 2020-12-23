@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"github.com/mousybusiness/go-web/ws/wstest"
+	"io/ioutil"
+	"log"
 	"testing"
 	"time"
 )
 
 func TestNewConnection(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
 
 	tt := []struct {
 		name  string
@@ -61,6 +64,8 @@ func (w WSConn) WriteMessage(messageType int, data []byte) error {
 func (w WSConn) ReadMessage() (messageType int, p []byte, err error) { return w.MsgType, w.Data, w.Err }
 
 func TestWrite(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
+
 	w := WSConn{
 		MsgType: 1,
 		Data:    nil,
@@ -81,6 +86,8 @@ func TestWrite(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
+	log.SetOutput(ioutil.Discard) // discard logs
+
 	// happy path
 	w := WSConn{
 		MsgType: 1,
