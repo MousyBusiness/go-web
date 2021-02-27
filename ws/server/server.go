@@ -93,6 +93,7 @@ func (c *ConnectedClient) Read(ctx context.Context, msgCh chan Msg) {
 
 			m, err := Server.ReadMessage(&c.conn)
 			if err != nil {
+				log.Println("error in ws read:", err.Error())
 				if _, ok := Connections[c.uid]; ok {
 					c.conn.CleanUp(c.uid)
 					delete(Connections, c.uid)
