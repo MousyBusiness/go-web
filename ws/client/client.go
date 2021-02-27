@@ -26,11 +26,16 @@ type dialer interface {
 }
 
 // creates new connection
-func NewConnection(d dialer, name, host, path, token string) (*connection, error) {
+func NewConnection(d dialer, secure bool, name, host, path, token string) (*connection, error) {
 	if name == "" || host == "" || path == "" || token == "" {
 		return nil, errors.New(fmt.Sprintf("invalid host or path, host: %s, path: %s", host, path))
 	}
-	u := url.URL{Scheme: "ws", Host: host, Path: path}
+
+	scheme := "ws"
+	if secure {
+		scheme = "wss"
+	}
+	u := url.URL{Scheme: scheme, Host: host, Path: path}
 	log.Printf("connecting to %s", u.String())
 	h := http.Header{}
 	h.Add("Authorization", fmt.Sprintf("Bearer %s", token))

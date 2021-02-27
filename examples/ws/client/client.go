@@ -17,7 +17,7 @@ func handleMsg(msg []byte) error {
 func main() {
 	ctx := context.Background()
 
-	conn, _ := client.NewConnection(websocket.DefaultDialer, "my-connection-name", "http://myapp.com", "/signal", os.Getenv("TOKEN"))
+	conn, _ := client.NewConnection(websocket.DefaultDialer, false, "my-connection-name", "http://myapp.com", "/signal", os.Getenv("TOKEN"))
 
 	ch := make(chan []byte)
 	go func() {
