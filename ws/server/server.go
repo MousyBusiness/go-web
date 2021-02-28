@@ -110,5 +110,8 @@ func (c *ConnectedClient) Read(ctx context.Context, msgCh chan Msg) {
 }
 
 func (c *ConnectedClient) Close() {
-	c.conn.GetConnection().Close()
+	if c.conn != nil {
+		_ = c.conn.CleanUp(c.uid)
+		_ = c.conn.GetConnection().Close()
+	}
 }
