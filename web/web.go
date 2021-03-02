@@ -39,14 +39,14 @@ type KV struct {
 	Value string
 }
 
-// authenticated get helper using TOKEN env variable
+// authenticated GET helper using TOKEN env variable
 func AGet(url string, timeout time.Duration, headers ...KV) (int, []byte, error) {
 	return Get(url, timeout, append(headers, getAuthKV())...)
 }
 
-// http get helper
+// http GET helper
 func Get(url string, timeout time.Duration, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -54,14 +54,44 @@ func Get(url string, timeout time.Duration, headers ...KV) (int, []byte, error) 
 	return do(req, timeout, headers...)
 }
 
-// authenticated post helper using TOKEN env variable
+// authenticated PATCH helper using TOKEN env variable
+func APatch(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
+	return Patch(url, timeout, b, append(headers, getAuthKV())...)
+}
+
+// http PATCH helper
+func Patch(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
+	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(b))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return do(req, timeout, headers...)
+}
+
+// authenticated POST helper using TOKEN env variable
 func APost(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
 	return Post(url, timeout, b, append(headers, getAuthKV())...)
 }
 
-// http post helper
+// http POST helper
 func Post(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest("POST", url, bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return do(req, timeout, headers...)
+}
+
+// authenticated DELETE helper using TOKEN env variable
+func ADelete(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
+	return Delete(url, timeout, b, append(headers, getAuthKV())...)
+}
+
+// http DELETE helper
+func Delete(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
+	req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
 	if err != nil {
 		return 0, nil, err
 	}
