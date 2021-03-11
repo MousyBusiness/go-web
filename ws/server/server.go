@@ -61,6 +61,9 @@ func (c *ConnectedClient) Write(b []byte) error {
 	if b == nil || len(b) == 0 {
 		return errors.New("cannot write empty byte slice")
 	}
+	if c.conn == nil {
+		return errors.New("connection is nil during write")
+	}
 	err := Server.WriteMessage(&c.conn, b)
 	if err != nil {
 		log.Println("error writing socket,", err)
@@ -75,13 +78,18 @@ func (c *ConnectedClient) Write(b []byte) error {
 	return nil
 }
 
+// Msg describes what is read for who
 type Msg struct {
 	From string
 	Data []byte
 }
 
 // read loop for websocket
-func (c *ConnectedClient) Read(ctx context.Context, msgCh chan Msg) {
+func (c *ConnectedClient) Read(ctx context.Context, msgCh chan Msg) error {
+	if c.conn == nil {
+		return errors.New("connection is nil during write")
+	}
+
 	go func() {
 		defer c.conn.GetConnection().Close()
 		for {
@@ -107,6 +115,8 @@ func (c *ConnectedClient) Read(ctx context.Context, msgCh chan Msg) {
 			}
 		}
 	}()
+
+	return nil
 }
 
 func (c *ConnectedClient) Close() {
