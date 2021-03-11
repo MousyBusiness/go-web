@@ -84,6 +84,21 @@ func Post(url string, timeout time.Duration, b []byte, headers ...KV) (int, []by
 	return do(req, timeout, headers...)
 }
 
+// authenticated PUT helper using TOKEN env variable
+func APut(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
+	return Post(url, timeout, b, append(headers, getAuthKV())...)
+}
+
+// http PUT helper
+func Put(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(b))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return do(req, timeout, headers...)
+}
+
 // authenticated DELETE helper using TOKEN env variable
 func ADelete(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
 	return Delete(url, timeout, b, append(headers, getAuthKV())...)
