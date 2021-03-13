@@ -71,7 +71,7 @@ func TestWrite(t *testing.T) {
 		Data:    nil,
 		Err:     nil,
 	}
-	conn := connection{
+	conn := Connection{
 		Name: "stub",
 		Conn: w,
 	}
@@ -94,7 +94,7 @@ func TestRead(t *testing.T) {
 		Data:    []byte{1, 2, 3},
 		Err:     nil,
 	}
-	conn := connection{
+	conn := Connection{
 		Name: "stub",
 		Conn: w,
 	}
@@ -118,7 +118,7 @@ func TestRead(t *testing.T) {
 		Data:    []byte{1, 2, 3},
 		Err:     errors.New("stub"),
 	}
-	conn = connection{
+	conn = Connection{
 		Name: "stub",
 		Conn: w,
 	}

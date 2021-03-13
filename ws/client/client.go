@@ -16,17 +16,17 @@ type websocketIO interface {
 	ReadMessage() (messageType int, p []byte, err error)
 }
 
-type connection struct {
+type Connection struct {
 	Name string
 	Conn websocketIO
 }
 
-type dialer interface {
+type Dialer interface {
 	Dial(urlStr string, requestHeader http.Header) (*websocket.Conn, *http.Response, error)
 }
 
-// creates new connection
-func NewConnection(d dialer, secure bool, name, host, path, token string) (*connection, error) {
+// creates new Connection
+func NewConnection(d Dialer, secure bool, name, host, path, token string) (*Connection, error) {
 	if name == "" || host == "" || path == "" || token == "" {
 		return nil, errors.New(fmt.Sprintf("invalid host or path, host: %s, path: %s", host, path))
 	}
@@ -45,7 +45,7 @@ func NewConnection(d dialer, secure bool, name, host, path, token string) (*conn
 	}
 
 	log.Println("connected!")
-	conn := &connection{
+	conn := &Connection{
 		Name: name,
 		Conn: c,
 	}
@@ -53,12 +53,12 @@ func NewConnection(d dialer, secure bool, name, host, path, token string) (*conn
 }
 
 //  write to websocket
-func (c *connection) Write(b []byte) error {
+func (c *Connection) Write(b []byte) error {
 	return c.Conn.WriteMessage(websocket.TextMessage, b)
 }
 
 // read loop for wesocket
-func (c *connection) Read(ctx context.Context, msgCh chan []byte) {
+func (c *Connection) Read(ctx context.Context, msgCh chan []byte) {
 	go func() {
 		for {
 			select {
@@ -68,7 +68,7 @@ func (c *connection) Read(ctx context.Context, msgCh chan []byte) {
 			}
 			_, m, err := c.Conn.ReadMessage()
 			if err != nil {
-				log.Println("error in client read, was connection was close by server? ", err.Error())
+				log.Println("error in client read, was Connection was close by server? ", err.Error())
 				close(msgCh)
 				return
 			}
