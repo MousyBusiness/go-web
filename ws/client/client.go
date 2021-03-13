@@ -16,13 +16,39 @@ type websocketIO interface {
 	ReadMessage() (messageType int, p []byte, err error)
 }
 
+type Dialer interface {
+	Dial(urlStr string, requestHeader http.Header) (*websocket.Conn, *http.Response, error)
+}
+
+
 type Connection struct {
 	Name string
 	Conn websocketIO
 }
 
-type Dialer interface {
-	Dial(urlStr string, requestHeader http.Header) (*websocket.Conn, *http.Response, error)
+//  write to websocket
+func (c *Connection) Write(b []byte) error {
+	return c.Conn.WriteMessage(websocket.TextMessage, b)
+}
+
+// read loop for wesocket
+func (c *Connection) Read(ctx context.Context, msgCh chan []byte) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+			_, m, err := c.Conn.ReadMessage()
+			if err != nil {
+				log.Println("error in client read, was Connection was close by server? ", err.Error())
+				close(msgCh)
+				return
+			}
+			msgCh <- m
+		}
+	}()
 }
 
 // creates new Connection
@@ -52,27 +78,3 @@ func NewConnection(d Dialer, secure bool, name, host, path, token string) (*Conn
 	return conn, nil
 }
 
-//  write to websocket
-func (c *Connection) Write(b []byte) error {
-	return c.Conn.WriteMessage(websocket.TextMessage, b)
-}
-
-// read loop for wesocket
-func (c *Connection) Read(ctx context.Context, msgCh chan []byte) {
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-			}
-			_, m, err := c.Conn.ReadMessage()
-			if err != nil {
-				log.Println("error in client read, was Connection was close by server? ", err.Error())
-				close(msgCh)
-				return
-			}
-			msgCh <- m
-		}
-	}()
-}
