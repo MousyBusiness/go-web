@@ -68,7 +68,7 @@ func (c *connection) Read(ctx context.Context, msgCh chan []byte) {
 			}
 			_, m, err := c.Conn.ReadMessage()
 			if err != nil {
-				log.Println("error in client read, was connection was close by server?")
+				log.Println("error in client read, was connection was close by server? ", err.Error())
 				close(msgCh)
 				return
 			}
