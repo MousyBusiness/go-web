@@ -19,7 +19,9 @@ func (m *MockHappyConnection) Write(b []byte) error {
 }
 
 func (m *MockHappyConnection) Read(ctx context.Context, msgCh chan []byte) {
-	msgCh <- []byte("stub") // immediately receive a message
+	go func() {
+		msgCh <- []byte("stub") // immediately receive a message, dont block execution
+	}()
 }
 
 type MockUnhappyConnection struct {
