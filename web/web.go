@@ -120,7 +120,10 @@ func do(req *http.Request, timeout time.Duration, headers ...KV) (int, []byte, e
 		req.Header.Set(v.Key, v.Value)
 	}
 
-	Client.SetTimeout(timeout)
+	// a value of 0 means no timeout
+	if timeout.Minutes() != 0 {
+		Client.SetTimeout(timeout)
+	}
 	resp, err := Client.Do(req)
 	if err != nil {
 		return 0, nil, err
