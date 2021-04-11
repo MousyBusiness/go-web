@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	errs "github.com/pkg/errors"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -19,7 +18,6 @@ type websocketIO interface {
 type Dialer interface {
 	Dial(urlStr string, requestHeader http.Header) (*websocket.Conn, *http.Response, error)
 }
-
 
 type Connection struct {
 	Name string
@@ -42,7 +40,6 @@ func (c *Connection) Read(ctx context.Context, msgCh chan []byte) {
 			}
 			_, m, err := c.Conn.ReadMessage()
 			if err != nil {
-				log.Println("error in client read, was Connection was close by server? ", err.Error())
 				close(msgCh)
 				return
 			}
@@ -62,7 +59,6 @@ func NewConnection(d Dialer, secure bool, name, host, path, token string) (*Conn
 		scheme = "wss"
 	}
 	u := url.URL{Scheme: scheme, Host: host, Path: path}
-	log.Printf("connecting to %s", u.String())
 	h := http.Header{}
 	h.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	c, _, err := d.Dial(u.String(), h)
@@ -70,11 +66,9 @@ func NewConnection(d Dialer, secure bool, name, host, path, token string) (*Conn
 		return nil, errs.Wrap(err, "failed to dial websocket")
 	}
 
-	log.Println("connected!")
 	conn := &Connection{
 		Name: name,
 		Conn: c,
 	}
 	return conn, nil
 }
-

@@ -6,7 +6,6 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"io"
-	"log"
 )
 
 var Connections = make(map[string]*ConnectedClient)
@@ -66,7 +65,6 @@ func (c *ConnectedClient) Write(b []byte) error {
 	}
 	err := Server.WriteMessage(&c.conn, b)
 	if err != nil {
-		log.Println("error writing socket,", err)
 		if err == io.EOF {
 			if _, ok := Connections[c.uid]; ok {
 				c.conn.CleanUp(c.uid)
@@ -101,12 +99,10 @@ func (c *ConnectedClient) Read(ctx context.Context, msgCh chan Msg) error {
 
 			m, err := Server.ReadMessage(&c.conn)
 			if err != nil {
-				log.Println("error in ws read:", err.Error())
 				if _, ok := Connections[c.uid]; ok {
 					c.conn.CleanUp(c.uid)
 					delete(Connections, c.uid)
 				}
-				log.Println("ending connection")
 				return
 			}
 
