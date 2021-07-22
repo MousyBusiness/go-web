@@ -49,9 +49,9 @@ func (c *Connection) Read(ctx context.Context, msgCh chan []byte) {
 }
 
 // creates new Connection
-func NewConnection(d Dialer, secure bool, name, host, path, token string) (*Connection, error) {
-	if name == "" || host == "" || path == "" || token == "" {
-		return nil, errors.New(fmt.Sprintf("invalid host or path, host: %s, path: %s", host, path))
+func NewConnection(d Dialer, secure bool, name, host, path, token string, query string) (*Connection, error) {
+	if name == "" || host == "" || path == "" {
+		return nil, errors.New(fmt.Sprintf("invalid connection, name: %v, host: %s, path: %s", name, host, path))
 	}
 
 	scheme := "ws"
@@ -59,8 +59,16 @@ func NewConnection(d Dialer, secure bool, name, host, path, token string) (*Conn
 		scheme = "wss"
 	}
 	u := url.URL{Scheme: scheme, Host: host, Path: path}
+
 	h := http.Header{}
-	h.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	if token != "" {
+		h.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	}
+
+	if query != "" {
+		u.RawQuery = query
+	}
+
 	c, _, err := d.Dial(u.String(), h)
 	if err != nil {
 		return nil, errs.Wrap(err, "failed to dial websocket")

@@ -24,13 +24,13 @@ func TestNewConnection(t *testing.T) {
 		{"", "0.0.0.0", "/echo", "123", true},
 		{"push-service", "", "/echo", "123", true},
 		{"push-service", "0.0.0.0", "", "123", true},
-		{"push-service", "0.0.0.0", "/echo", "", true},
+		{"push-service", "0.0.0.0", "/echo", "", false},
 	}
 
 	md := wstest.MockDialer{}
 
 	for _, v := range tt {
-		_, err := NewConnection(md, false, v.name, v.host, v.path, v.token)
+		_, err := NewConnection(md, false, v.name, v.host, v.path, v.token, "stub")
 		if !v.isErr {
 			checkErr(t, err)
 		} else {
@@ -40,12 +40,12 @@ func TestNewConnection(t *testing.T) {
 
 	// happy path
 	md = wstest.MockDialer{}
-	_, err := NewConnection(md, false, "stub", "stub", "stub", "stub")
+	_, err := NewConnection(md, false, "stub", "stub", "stub", "stub", "stub")
 	checkErr(t, err)
 
 	// dial failed
 	md = wstest.MockDialer{Err: errors.New("stub")}
-	_, err = NewConnection(md, false, "stub", "stub", "stub", "stub")
+	_, err = NewConnection(md, false, "stub", "stub", "stub", "stub", "stub")
 	checkErrNil(t, err)
 }
 
