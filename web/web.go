@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 )
@@ -40,10 +39,6 @@ type KV struct {
 	Value string
 }
 
-func encode(u string) string {
-	return url.QueryEscape(u)
-}
-
 // authenticated GET helper using TOKEN env variable
 func AGet(url string, timeout time.Duration, headers ...KV) (int, []byte, error) {
 	return Get(url, timeout, append(headers, getAuthKV())...)
@@ -51,7 +46,7 @@ func AGet(url string, timeout time.Duration, headers ...KV) (int, []byte, error)
 
 // http GET helper
 func Get(url string, timeout time.Duration, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest(http.MethodGet, encode(url), nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -66,7 +61,7 @@ func APatch(url string, timeout time.Duration, b []byte, headers ...KV) (int, []
 
 // http PATCH helper
 func Patch(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest(http.MethodPatch, encode(url), bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(b))
 	if err != nil {
 		return 0, nil, err
 	}
@@ -81,7 +76,7 @@ func APost(url string, timeout time.Duration, b []byte, headers ...KV) (int, []b
 
 // http POST helper
 func Post(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest(http.MethodPost, encode(url), bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 	if err != nil {
 		return 0, nil, err
 	}
@@ -96,7 +91,7 @@ func APut(url string, timeout time.Duration, b []byte, headers ...KV) (int, []by
 
 // http PUT helper
 func Put(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest(http.MethodPut, encode(url), bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(b))
 	if err != nil {
 		return 0, nil, err
 	}
@@ -111,7 +106,7 @@ func ADelete(url string, timeout time.Duration, b []byte, headers ...KV) (int, [
 
 // http DELETE helper
 func Delete(url string, timeout time.Duration, b []byte, headers ...KV) (int, []byte, error) {
-	req, err := http.NewRequest(http.MethodDelete, encode(url), bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
 	if err != nil {
 		return 0, nil, err
 	}
