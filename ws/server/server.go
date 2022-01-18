@@ -57,8 +57,8 @@ func NewConnection(uid string, conn CleanableConnection) *ConnectedClient {
 
 // write to websocket
 func (c *ConnectedClient) Write(b []byte) error {
-	if b == nil || len(b) == 0 {
-		return errors.New("cannot write empty byte slice")
+	if b == nil {
+		return errors.New("data is nil")
 	}
 	if c.conn == nil {
 		return errors.New("connection is nil during write")
